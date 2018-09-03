@@ -95,7 +95,7 @@ server.on('ready', ()=>{
 server.on('connected', function(client) {
   console.log('client connected', client.id);
 });
- 
+ // por favor no te lo cargues
 // fired when a message is received
 server.on('published', function(packet,client) {
     if(client!=null){
