@@ -1,9 +1,6 @@
 var mosca = require('mosca')
 const http = require('http')
 const bcrypt = require('bcrypt-nodejs');
-var settings = {
-  port: process.env.PORT || 1883,
-};
 /*
 let broker = new mosca.Server({settings});
 let server = http.createServer();
@@ -12,11 +9,11 @@ server.listen();*/
 //here we start mosca
 
 httpServ = http.createServer()
-var server = new mosca.Server(settings);
+var server = new mosca.Server({});
 server.attachHttpServer(httpServ);
-httpServ.listen(process.env.MQTT_WS_PORT || 5200);
-console.log("Web socket: "+process.env.MQTT_WS_PORT)
-console.log("Mosca socket: "+process.env.MQTT_PORT)
+httpServ.listen(process.env.PORT || 5200);
+console.log("Web socket: "+process.env.PORT)
+console.log("Mosca socket: "+process.env.PORT)
 
 var authenticate = function(client, username, password, callback) {
   //console.log("TOKEN: "+client.key)
