@@ -103,13 +103,31 @@ server.on('connected', function(client) {
  // por favor no te lo cargues
 // fired when a message is received
 server.on('published', function(packet,client) {
+
     if(client!=null){
     try{payload=JSON.parse(packet.payload);
-      let sentido='action';
-      message=payload.message;
-      token=payload.token;
-      sentido=payload.direction;
       console.log("message: "+payload)
+      fetch(URL_SERV+'/publish',{
+      method: 'post',
+      headers: {'content-type': 'application/json'},
+      body: JSON.stringify({
+        message: payload.message,
+        token: payload.token,
+        sentido: payload.sentido,
+        })
+    })
+    .then(response => response.json())
+    .then(m =>{
+      if (m.auth) {
+        console.log("Inserted")
+      }
+      else{
+        console.log("Not inserted")
+      }
+    })
+    .catch(err =>{
+      console.log(err)
+      })
     }
       catch(e){
         console.log(e)
