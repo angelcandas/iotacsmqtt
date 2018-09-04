@@ -16,7 +16,7 @@ httpServ.listen(process.env.PORT || 5200);
 console.log("Web socket: "+process.env.PORT);
 console.log("Mosca socket: "+process.env.PORT);
 //const URL_SERV = "http://127.0.0.1:3000";
-const URL_SERV = "ws://iotacsmqtt.herokuapp.com";
+const URL_SERV = "https://iotacsback.herokuapp.com";
 var authenticate = function(client, username, password, callback) {
   console.log("TOKEN: "+password)
   console.log("USER: "+username);
