@@ -1,6 +1,7 @@
 var mosca = require('mosca')
 const http = require('http')
 const bcrypt = require('bcrypt-nodejs');
+const fetch = require ('node-fetch');
 /*
 let broker = new mosca.Server({settings});
 let server = http.createServer();
@@ -8,40 +9,42 @@ broker.attachHttpServer(server);
 server.listen();*/
 //here we start mosca
 
-httpServ = http.createServer()
+httpServ = http.createServer();
 var server = new mosca.Server({});
 server.attachHttpServer(httpServ);
 httpServ.listen(process.env.PORT || 5200);
-console.log("Web socket: "+process.env.PORT)
-console.log("Mosca socket: "+process.env.PORT)
-
+console.log("Web socket: "+process.env.PORT);
+console.log("Mosca socket: "+process.env.PORT);
+const URL_SERV = "http://127.0.0.1:3000";
 var authenticate = function(client, username, password, callback) {
-  //console.log("TOKEN: "+client.key)
-  //console.log("USER: "+username);
-    password=password.toString();
-    callback(null,true);
-    // statements
-
-  //console.log("PASS: "+password);
-  /*
-  db.select('email','hash','key').from('login')
-  .where('email','=',username)
-  .then(data =>{
-    //console.log(data[0])
-    const isValid= bcrypt.compareSync(password,data[0].hash)
-    const keyok= (data[0].key==password) 
-    if (isValid || keyok){ 
-      client.user = username;
-      console.log(client.id+": authorized!")
-      callback(null, isValid||keyok);
-    }else{
-      callback(null,false);
-    }
+  console.log("TOKEN: "+password)
+  console.log("USER: "+username);
+  password=password.toString();
+  fetch(URL_SERV+'/auth',{
+      method: 'post',
+      headers: {'content-type': 'application/json'},
+      body: JSON.stringify({
+        email: username,
+        password: password,
+        })
     })
-  .catch(err => {
-    console.log(client.id+": Wrong credentials")})
+    .then(response => response.json())
+    .then(m =>{
+      console.log(m.auth)
+      if (m.auth) {
+        console.log("Authenticated")
+        callback(null,true);
+      }
+      else{
+        console.log("Not authenticated")
+        callback(null,false);
+      }
+    })
+    .catch(err =>{
+      console.log(err)
+    })
 
-}*/
+  
 }
 // In this case the client authorized as alice can publish to /users/alice taking
 // the username from the topic and verifing it is the same of the authorized user
@@ -50,24 +53,29 @@ var authorizePublish = function(client, topic, payload, callback) {
   message=payload.message;
   token=payload.token;
   ertopic=topic.split('/');
-  callback(null,true);
-/*
-  db.select('token').from('tokens').where('email','=',client.user)
-    .then(data=>{
-        var test=0;
-        data.forEach(dato =>{
-          if(token===dato.token){
-            callback(null,token===dato.token);
-            test++;
-          }
+  fetch(URL_SERV+'/apub',{
+      method: 'post',
+      headers: {'content-type': 'application/json'},
+      body: JSON.stringify({
+        email: ertopic[1],
+        token: token,
         })
-        if(test==0){
-          console.log(client.id+": Invalid token, message rejected");
-          callback(null,0);
-          return 0;
-        }
-  })*/
-  
+    })
+    .then(response => response.json())
+    .then(m =>{
+      console.log(m.auth)
+      if (m.auth) {
+        console.log("Authorized")
+        callback(null,true);
+      }
+      else{
+        console.log("Not authorized")
+        callback(null,false);
+      }
+    })
+    .catch(err =>{
+      console.log(err)
+    })
 }
 
 // In this case the client authorized as alice can subscribe to /users/alice taking
