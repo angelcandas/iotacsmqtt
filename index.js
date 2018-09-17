@@ -2,23 +2,15 @@ var mosca = require('mosca')
 const http = require('http')
 const bcrypt = require('bcrypt-nodejs');
 const fetch = require ('node-fetch');
-/*
-let broker = new mosca.Server({settings});
-let server = http.createServer();
-broker.attachHttpServer(server);
-server.listen();*/
-//here we start mosca
-
 httpServ = http.createServer();
 var server = new mosca.Server({});
 server.attachHttpServer(httpServ);
 httpServ.listen(process.env.PORT || 5200);
-console.log("Web socket: "+process.env.PORT);
-console.log("Mosca socket: "+process.env.PORT);
-//const URL_SERV = "http://127.0.0.1:3000";
+console.log("Web socket: "+process.env.PORT||5200);
+console.log("Mosca socket: "+process.env.PORT||5200);
 const URL_SERV = "https://iotacsback.herokuapp.com";
 var authenticate = function(client, username, password, callback) {
-  console.log("TOKEN: "+password)
+  console.log("Contraseña: "+password)
   console.log("USER: "+username);
   password=password.toString();
   fetch(URL_SERV+'/auth',{
@@ -50,9 +42,12 @@ var authenticate = function(client, username, password, callback) {
 // In this case the client authorized as alice can publish to /users/alice taking
 // the username from the topic and verifing it is the same of the authorized user
 var authorizePublish = function(client, topic, payload, callback) {
+  console.log("trying to authorize")
   payload=JSON.parse(payload);
   message=payload.message;
+  console.log("Message: "+message);
   token=payload.token;
+  console.log("Token publish: "+token);
   ertopic=topic.split('/');
   fetch(URL_SERV+'/apub',{
       method: 'post',
