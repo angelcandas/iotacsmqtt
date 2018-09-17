@@ -10,7 +10,7 @@ console.log("Web socket: "+process.env.PORT||5200);
 console.log("Mosca socket: "+process.env.PORT||5200);
 const URL_SERV = "https://iotacsback.herokuapp.com";
 var authenticate = function(client, username, password, callback) {
-  console.log("Contraseña: "+password)
+  console.log("Contraseña: "+password.toString())
   console.log("USER: "+username);
   password=password.toString();
   fetch(URL_SERV+'/auth',{
@@ -45,9 +45,9 @@ var authorizePublish = function(client, topic, payload, callback) {
   console.log("trying to authorize")
   payload=JSON.parse(payload);
   message=payload.message;
-  console.log("Message: "+message);
+  console.log("Message: "+message.toString());
   token=payload.token;
-  console.log("Token publish: "+token);
+  console.log("Token publish: "+token.toString());
   ertopic=topic.split('/');
   fetch(URL_SERV+'/apub',{
       method: 'post',
